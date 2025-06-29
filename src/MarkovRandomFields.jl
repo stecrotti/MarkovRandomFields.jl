@@ -1,5 +1,10 @@
 module MarkovRandomFields
 
-# Write your package code here.
+using IndexedFactorGraphs: AbstractFactorGraph
 
-end
+include("factor.jl")
+include("markov_random_field.jl")
+
+include("Test/Test.jl")
+    
+end # end module

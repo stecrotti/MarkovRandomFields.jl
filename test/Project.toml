@@ -1,3 +1,8 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+IndexedFactorGraphs = "edf0a622-c16b-410a-a162-e53dc16a76ae"
+InvertedIndices = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
+LogarithmicNumbers = "aa2f6b4e-9042-5d33-9679-40d3a6b85899"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
