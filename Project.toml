@@ -1,0 +1,7 @@
+name = "MarkovRandomFields"
+uuid = "89aeb94b-8fe9-403e-922a-14510fb125d2"
+authors = ["stecrotti <sky_96@live.it>"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.11"
