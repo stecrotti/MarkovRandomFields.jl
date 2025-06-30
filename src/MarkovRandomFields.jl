@@ -1,27 +1,23 @@
 module MarkovRandomFields
 
-using IndexedFactorGraphs: AbstractFactorGraph, v_vertex, f_vertex, v_vertices, f_vertices, nvariables, nfactors, neighbors
-import IndexedFactorGraphs
+using IndexedFactorGraphs: AbstractFactorGraph, FactorGraph, v_vertex, f_vertex, v_vertices, f_vertices, nvariables, nfactors, neighbors
+using IndexedFactorGraphs
 using Random: AbstractRNG, default_rng
 using InvertedIndices: Not
 using LogarithmicNumbers: ULogarithmic
 
-using AbstractMCMC
-using LogDensityProblems: LogDensityProblems, logdensity
-
 include("factor.jl")
 include("markov_random_field.jl")
 
-include("metropolis.jl")
-
 include("Test/Test.jl")
+include("MCMC/MCMC.jl")
 
 
-export TabulatedFactor, Factor
+export Factor, TabulatedFactor, UniformFactor
 
 export MarkovRandomField
-export nvariables, nfactors, domain, domains
-export weight, logprob_unnormalized
-export MRFLogDensityModel, MHSampler
+export variables, factors, nvariables, nfactors, domain, domains
+export weight, logprob
+
     
 end # end module

@@ -1,6 +1,8 @@
-using MarkovRandomFields, MarkovRandomFields.Test
-using Test, TestItems
+using MarkovRandomFields, MarkovRandomFields.Test, MarkovRandomFields.MCMC
+using Test
 using Aqua
+using Statistics
+using AbstractMCMC
 
 @testset "MarkovRandomFields.jl" begin
     # @testset "Code quality (Aqua.jl)" begin
@@ -12,8 +14,10 @@ using Aqua
         include("basics.jl")
     end
     
-    @testset "Metropolis proposals" begin
-        include("metropolis.jl")
+    @testset "MCMC" begin
+        @testset "Metropolis" begin
+            include("MCMC/metropolis.jl")
+        end
     end
 end
 

@@ -1,6 +1,6 @@
 module Test
 
-using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, weight
+using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, weight, variables, factors, logprob
 using Random: AbstractRNG, default_rng
 using LogarithmicNumbers
 using InvertedIndices
@@ -23,7 +23,7 @@ end
 rand_factor(nstates) = rand_factor(default_rng(), nstates)
 
 """
-    rand_mrf([rng], g::AbstractFactorGraph, nstates)
+    rand_mrf([rng], g::AbstractFactorGraph, nstates; variable_biases)
 
 Return a `MarkovRandomField` with random factors.
 
@@ -31,16 +31,17 @@ Return a `MarkovRandomField` with random factors.
 """
 function rand_mrf(rng::AbstractRNG, g::AbstractFactorGraph, nstates)
     factors = [rand_factor(rng, [nstates[i] for i in neighbors(g,f_vertex(a))]) for a in f_vertices(g)] 
-    return MarkovRandomField(g, factors, nstates)  
+    variable_biases = [rand_factor(rng, [nstates[i]]) for i in v_vertices(g)]
+    return MarkovRandomField(g, factors, nstates; variable_biases)  
 end
 rand_mrf(g::AbstractFactorGraph, nstates) = rand_mrf(default_rng(), g, nstates)
 rand_mrf(A::AbstractMatrix, args...; kw...) = rand_mrf(FactorGraph(A), args...; kw...)
 
 function eachstate(model::MarkovRandomField)
-    return Iterators.product((1:nstates(model, i) for i in variables(model.g))...)
+    return Iterators.product((1:nstates(model, i) for i in variables(model))...)
 end
 
-nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in v_vertices(model.g); init=1)
+nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in variables(model); init=1)
 
 """
     exact_lognormalization(model::MarkovRandomField)
@@ -58,7 +59,7 @@ end
 Exhaustively compute the probability of each possible configuration of the variables.
 """
 function exact_prob(model::MarkovRandomField; logZ = exact_lognormalization(model))
-    p = [log(ULogarithmic(weight(model, x)) - logZ) for x in eachstate(model)]
+    p = [exp(logprob(model, x) - logZ) for x in eachstate(model)]
     return p
 end
 
