@@ -1,11 +1,10 @@
 module Test
 
-using MarkovRandomFields: Factor, MarkovRandomField, nstates
-using MarkovRandomFields
+using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, weight
 using Random: AbstractRNG, default_rng
-using LogarithmicNumbers: ULogarithmic
-using InvertedIndices: Not
-using IndexedFactorGraphs: AbstractFactorGraph
+using LogarithmicNumbers
+using InvertedIndices
+using IndexedFactorGraphs
 
 export exact_prob, exact_marginals, exact_factor_marginals
 export rand_factor, rand_mrf
@@ -16,10 +15,10 @@ export rand_factor, rand_mrf
 
 Return a random `Factor` whose domain is specified by the iterable `nstates`.
 """
-function rand_factor(rng::AbstractRNG, states)
+function rand_factor(rng::AbstractRNG, nstates)
     isempty(nstates) && return Factor(zeros(0))
-    values = rand(rng, states...)
-    return Factor(values)
+    values = rand(rng, nstates...)
+    return TabulatedFactor(values)
 end
 rand_factor(nstates) = rand_factor(default_rng(), nstates)
 
@@ -31,16 +30,17 @@ Return a `MarkovRandomField` with random factors.
 `nstates` is an iterable containing the number of values that can be taken by each variable.
 """
 function rand_mrf(rng::AbstractRNG, g::AbstractFactorGraph, nstates)
-    factors = [rand_factor(rng, [nstates[i] for i in neighbors(g,factor(a))]) for a in factors(g)] 
+    factors = [rand_factor(rng, [nstates[i] for i in neighbors(g,f_vertex(a))]) for a in f_vertices(g)] 
     return MarkovRandomField(g, factors, nstates)  
 end
 rand_mrf(g::AbstractFactorGraph, nstates) = rand_mrf(default_rng(), g, nstates)
+rand_mrf(A::AbstractMatrix, args...; kw...) = rand_mrf(FactorGraph(A), args...; kw...)
 
 function eachstate(model::MarkovRandomField)
     return Iterators.product((1:nstates(model, i) for i in variables(model.g))...)
 end
 
-nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in variables(model.g); init=1)
+nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in v_vertices(model.g); init=1)
 
 """
     exact_lognormalization(model::MarkovRandomField)
@@ -58,7 +58,7 @@ end
 Exhaustively compute the probability of each possible configuration of the variables.
 """
 function exact_prob(model::MarkovRandomField; logZ = exact_lognormalization(model))
-    p = [exp(ULogarithmic, -energy(model, x) - logZ) for x in eachstate(model)]
+    p = [log(ULogarithmic(weight(model, x)) - logZ) for x in eachstate(model)]
     return p
 end
 
@@ -69,7 +69,7 @@ Exhaustively compute marginal distributions for each variable.
 """
 function exact_marginals(model::MarkovRandomField; p_exact = exact_prob(model))
     dims = 1:ndims(p_exact)
-    return map(variables(model.g)) do i
+    return map(variables(model)) do i
         vec(sum(p_exact; dims=dims[Not(i)]))
     end
 end
@@ -81,8 +81,8 @@ Exhaustively compute marginal distributions for each factor.
 """
 function exact_factor_marginals(model::MarkovRandomField; p_exact = exact_prob(model))
     dims = 1:ndims(p_exact)
-    return map(factors(model.g)) do a
-        ∂a = neighbors(model.g, factor(a))
+    return map(factors(model)) do a
+        ∂a = neighbors(model, f_vertex(a))
         dropdims(sum(p_exact; dims=dims[Not(∂a)]); dims=tuple(dims[Not(∂a)]...))
     end
 end

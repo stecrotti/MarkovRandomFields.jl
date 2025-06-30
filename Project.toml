@@ -4,14 +4,20 @@ authors = ["stecrotti <sky_96@live.it>"]
 version = "0.1.0"
 
 [deps]
+AbstractMCMC = "80f14c24-f653-4e6a-9b94-39d6b0f70001"
+AdvancedMH = "5b7e9947-ddc0-4b3f-9b55-0d8042f74170"
 IndexedFactorGraphs = "edf0a622-c16b-410a-a162-e53dc16a76ae"
 InvertedIndices = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
+LogDensityProblems = "6fdf6af0-433a-55f7-b3ed-c6c6e0b8df7c"
 LogarithmicNumbers = "aa2f6b4e-9042-5d33-9679-40d3a6b85899"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-IndexedFactorGraphs = "0.1.3"
+AbstractMCMC = "5.6.3"
+AdvancedMH = "0.8.8"
+IndexedFactorGraphs = "0.2"
 InvertedIndices = "1.3.1"
+LogDensityProblems = "2.1.2"
 LogarithmicNumbers = "1.4.1"
 Random = "1.11.0"
 julia = "1.11"
