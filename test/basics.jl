@@ -1,7 +1,7 @@
 @testset "Constructor" begin
-    N = 5
+    N = 2
     nstates = fill(3, N)
-    A = rand(Bool, 3, N)
-    model = rand_mrf(A, nstates)
+    A = zeros(0, 2)
+    model = MarkovRandomField(A, TabulatedFactor[], nstates)
     @test all(isa.(model.variable_biases, UniformFactor))
 end

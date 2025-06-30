@@ -43,7 +43,8 @@ function AbstractMCMC.step(
         rng::AbstractRNG,
         model::MRFModel,
         sampler::MHSampler;
-        initial_state = Nothing)
+        initial_state = Nothing, 
+        kw...)
 
         if initial_state == Nothing
             next_state = sample_from_variable_biases(rng, model.mrf)
