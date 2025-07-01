@@ -45,4 +45,6 @@ function weight(model::MarkovRandomField, x)
     return p
 end
 
+# This returns the UNNORMALIZED probability!
+# Should we keep the name?
 logprob(model::MarkovRandomField, x) = log(weight(model, x))

@@ -16,5 +16,6 @@ include("metropolis.jl")
 
 export MRFModel
 export MHSampler
+export sample
 
 end # end module

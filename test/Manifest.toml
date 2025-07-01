@@ -2,7 +2,7 @@
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "730d068efcb96636c6277afb67eafaafd89ec404"
+project_hash = "73b7efe3357feb32162d2aa4dca4b2ac64b164eb"
 
 [[deps.AbstractMCMC]]
 deps = ["BangBang", "ConsoleProgressMonitor", "Distributed", "FillArrays", "LogDensityProblems", "Logging", "LoggingExtras", "ProgressLogging", "Random", "StatsBase", "TerminalLoggers", "Transducers"]
@@ -220,9 +220,9 @@ version = "1.13.0"
 
 [[deps.IndexedFactorGraphs]]
 deps = ["FillArrays", "Graphs", "IndexedGraphs", "Random", "SparseArrays", "StatsBase"]
-git-tree-sha1 = "1e36a48f71a77f27bfd56599803f246283e920b4"
+path = "../../IndexedFactorGraphs"
 uuid = "edf0a622-c16b-410a-a162-e53dc16a76ae"
-version = "0.1.3"
+version = "0.2.0"
 
     [deps.IndexedFactorGraphs.extensions]
     IndexedFactorGraphsPlotsExt = ["Plots", "GraphRecipes"]
@@ -399,6 +399,17 @@ version = "2023.12.12"
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
+
+[[deps.OffsetArrays]]
+git-tree-sha1 = "117432e406b5c023f665fa73dc26e79ec3630151"
+uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
+version = "1.17.0"
+
+    [deps.OffsetArrays.extensions]
+    OffsetArraysAdaptExt = "Adapt"
+
+    [deps.OffsetArrays.weakdeps]
+    Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
 
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
@@ -626,6 +637,12 @@ version = "1.11.0"
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 version = "1.11.0"
+
+[[deps.UniformIsingModels]]
+deps = ["LinearAlgebra", "LogExpFunctions", "OffsetArrays", "Random"]
+git-tree-sha1 = "76338fc88a0cb17081d48761b16e82b70aeb645c"
+uuid = "91393fb9-e38b-4a31-9409-aa579b4163ad"
+version = "0.4.0"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
