@@ -61,10 +61,10 @@ end
 Sample a random configuration from the variables' priors
 """
 function sample_from_variable_biases(rng::AbstractRNG, model::MarkovRandomField)
-    return map(variables(model)) do i
+    return map(eachvariable(model)) do i
         bias = model.variable_biases[i]
         states = domain(model, i)
         w = [weight(bias, x) for x in states] 
-        sample(rng, states, weights(w))
+        StatsBase.sample(rng, states, StatsBase.weights(w))
     end
 end

@@ -2,6 +2,7 @@
     Factor
 
 An abstract type representing a factor.
+It should implement the `weight(::Factor, x)` method to evaluate the factor for input `x`.
 """
 abstract type Factor end
 

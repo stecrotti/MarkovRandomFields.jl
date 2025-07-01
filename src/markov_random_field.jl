@@ -25,8 +25,8 @@ MarkovRandomField(A::AbstractMatrix, args...; kw...) = MarkovRandomField(FactorG
 IndexedFactorGraphs.nvariables(model::MarkovRandomField) = nvariables(model.graph)
 IndexedFactorGraphs.nfactors(model::MarkovRandomField) = nfactors(model.graph)
 
-variables(model::MarkovRandomField) = v_vertices(model.graph)
-factors(model::MarkovRandomField) = f_vertices(model.graph)
+eachvariable(model::MarkovRandomField) = v_vertices(model.graph)
+eachfactor(model::MarkovRandomField) = f_vertices(model.graph)
 
 Base.isempty(model::MarkovRandomField) = isempty(v_vertices(model.graph))
 

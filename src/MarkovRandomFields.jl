@@ -10,13 +10,14 @@ include("factor.jl")
 include("markov_random_field.jl")
 
 include("Test/Test.jl")
+include("Models/Models.jl")
 include("MCMC/MCMC.jl")
 
 
 export Factor, TabulatedFactor, UniformFactor
 
 export MarkovRandomField
-export variables, factors, nvariables, nfactors, domain, domains
+export eachvariable, eachfactor, nvariables, nfactors, domain, domains
 export weight, logprob
 
     

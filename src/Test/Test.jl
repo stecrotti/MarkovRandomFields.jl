@@ -1,6 +1,6 @@
 module Test
 
-using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, weight, variables, factors, logprob
+using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, weight, eachvariable, eachfactor, logprob
 using Random: AbstractRNG, default_rng
 using LogarithmicNumbers
 using InvertedIndices
@@ -38,10 +38,10 @@ rand_mrf(g::AbstractFactorGraph, nstates) = rand_mrf(default_rng(), g, nstates)
 rand_mrf(A::AbstractMatrix, args...; kw...) = rand_mrf(FactorGraph(A), args...; kw...)
 
 function eachstate(model::MarkovRandomField)
-    return Iterators.product((1:nstates(model, i) for i in variables(model))...)
+    return Iterators.product((1:nstates(model, i) for i in eachvariable(model))...)
 end
 
-nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in variables(model); init=1)
+nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in eachvariable(model); init=1)
 
 """
     exact_lognormalization(model::MarkovRandomField)
@@ -70,7 +70,7 @@ Exhaustively compute marginal distributions for each variable.
 """
 function exact_marginals(model::MarkovRandomField; p_exact = exact_prob(model))
     dims = 1:ndims(p_exact)
-    return map(variables(model)) do i
+    return map(eachvariable(model)) do i
         vec(sum(p_exact; dims=dims[Not(i)]))
     end
 end
@@ -82,7 +82,7 @@ Exhaustively compute marginal distributions for each factor.
 """
 function exact_factor_marginals(model::MarkovRandomField; p_exact = exact_prob(model))
     dims = 1:ndims(p_exact)
-    return map(factors(model)) do a
+    return map(eachfactor(model)) do a
         ∂a = neighbors(model, f_vertex(a))
         dropdims(sum(p_exact; dims=dims[Not(∂a)]); dims=tuple(dims[Not(∂a)]...))
     end

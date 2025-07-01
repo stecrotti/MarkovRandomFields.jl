@@ -1,9 +1,9 @@
 module MCMC
 
-using MarkovRandomFields: MarkovRandomField, nstates, logprob, weight, domain, variables
+using MarkovRandomFields: MarkovRandomField, nstates, logprob, weight, domain, eachvariable
 using AbstractMCMC
 using Random: AbstractRNG, default_rng
-using StatsBase: sample, weights
+import StatsBase
 
 """ 
 A subtype of AbstractMCMC.AbstractModel to work with discrete variables from Markov Random Fields
