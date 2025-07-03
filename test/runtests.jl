@@ -9,10 +9,10 @@ using LinearAlgebra
 using IndexedFactorGraphs
 
 
-# @testset "Code quality (Aqua.jl)" begin
-#     Aqua.test_all(MarkovRandomFields; ambiguities = false)
-#     Aqua.test_all(MarkovRandomFields)
-# end
+@testset "Code quality (Aqua.jl)" begin
+    Aqua.test_all(MarkovRandomFields; ambiguities = false)
+    Aqua.test_all(MarkovRandomFields)
+end
 
 @testset "Basics" begin
     include("basics.jl")
