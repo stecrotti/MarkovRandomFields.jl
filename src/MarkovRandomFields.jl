@@ -1,6 +1,6 @@
 module MarkovRandomFields
 
-using IndexedFactorGraphs: AbstractFactorGraph, FactorGraph, v_vertex, f_vertex, v_vertices, f_vertices, nvariables, nfactors, neighbors
+using IndexedFactorGraphs: AbstractFactorGraph, FactorGraph, v_vertex, f_vertex, eachvariable, eachfactor, nvariables, nfactors, neighbors
 using IndexedFactorGraphs
 using Random: AbstractRNG, default_rng
 using InvertedIndices: Not
