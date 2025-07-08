@@ -6,7 +6,8 @@ using LogarithmicNumbers
 using InvertedIndices
 using IndexedFactorGraphs
 
-export exact_prob, exact_marginals, exact_factor_marginals
+export eachstate, nstatestot
+export exact_lognormalization, exact_prob, exact_marginals, exact_factor_marginals
 export rand_factor, rand_mrf
 
 
