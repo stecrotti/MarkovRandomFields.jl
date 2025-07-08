@@ -25,10 +25,10 @@ MarkovRandomField(A::AbstractMatrix, args...; kw...) = MarkovRandomField(FactorG
 IndexedFactorGraphs.nvariables(model::MarkovRandomField) = nvariables(model.graph)
 IndexedFactorGraphs.nfactors(model::MarkovRandomField) = nfactors(model.graph)
 
-eachvariable(model::MarkovRandomField) = v_vertices(model.graph)
-eachfactor(model::MarkovRandomField) = f_vertices(model.graph)
+eachvariable(model::MarkovRandomField) = eachvariable(model.graph)
+eachfactor(model::MarkovRandomField) = eachfactor(model.graph)
 
-Base.isempty(model::MarkovRandomField) = isempty(v_vertices(model.graph))
+Base.isempty(model::MarkovRandomField) = isempty(eachvariable(model.graph))
 
 nstates(model::MarkovRandomField, i::Integer) = model.nstates[i]
 domain(model::MarkovRandomField, i::Integer) = 1:nstates(model, i)
@@ -36,10 +36,10 @@ domains(model::MarkovRandomField) = (1:Xi for Xi in model.nstates)
 
 function weight(model::MarkovRandomField, x)
     p = one(ULogarithmic)
-    for a in f_vertices(model.graph)
+    for a in eachfactor(model.graph)
         p *= weight(model.factors[a], x[neighbors(model.graph, f_vertex(a))])
     end
-    for i in v_vertices(model.graph)
+    for i in eachvariable(model.graph)
         p *= weight(model.variable_biases[i], x[i])
     end
     return p
