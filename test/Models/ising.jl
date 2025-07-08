@@ -17,7 +17,7 @@
 
     avg_energy_exact = avg_energy(ising)
 
-    # Run (in parallel!)
+    # Run Metropolis-Hastings (in parallel!)
     nsamples = 10^5
     nchains = 8
     samples_bundle = sample(MRFModel(model), MHSampler(), MCMCThreads(),

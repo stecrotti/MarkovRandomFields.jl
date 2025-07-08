@@ -1,7 +1,7 @@
 """
 A Metropolis Hastings sampler
 """
-struct MHSampler <: AbstractMCMC.AbstractSampler end 
+struct MHSampler <: MRFSampler end 
 
 function sample_new_value(rng::AbstractRNG, sampler::MHSampler, model::MarkovRandomField, state::AbstractVector{<:Integer}, i::Integer)
     xi = state[i]
@@ -26,9 +26,17 @@ function AbstractMCMC.step(
     i = rand(rng, eachindex(state))
     xi_new = sample_new_value(rng, sampler, model.mrf, state, i)
     state_new[i] = xi_new
-    logprob_current = logprob(model.mrf, state)
-    logprob_new = logprob(model.mrf, state_new)
-    logprob_ratio = logprob_new - logprob_current
+    prob_current = prob_new = ULogarithmic(1)
+    for a in neighbors(model.mrf.graph, v_vertex(i))
+        ∂a = neighbors(model.mrf.graph, f_vertex(a))
+        fa = model.mrf.factors[a]
+        prob_current *= weight(fa, state[∂a])
+        prob_new *= weight(fa, state_new[∂a])
+    end
+    bias_i = model.mrf.variable_biases[i]
+    prob_new *= weight(bias_i, xi_new)
+    prob_current *= weight(bias_i, state[i])
+    logprob_ratio = log(prob_new / prob_current)
     if isnan(logprob_ratio)
         @show logprob_current, logprob_new
     end
@@ -36,35 +44,4 @@ function AbstractMCMC.step(
     accept = rand(rng) < r
     accept && copy!(state, state_new)
     return copy(state), state
-end
-
-# First sample
-function AbstractMCMC.step(
-        rng::AbstractRNG,
-        model::MRFModel,
-        sampler::MHSampler;
-        initial_state = Nothing, 
-        kw...)
-
-        if initial_state == Nothing
-            next_state = sample_from_variable_biases(rng, model.mrf)
-            return copy(next_state), next_state
-        else
-            return copy(initial_state), initial_state
-        end
-end
-function AbstractMCMC.step(model::MRFModel, sampler::MHSampler, args...; kw...)
-    return AbstractMCMC.step(default_rng(), model, sampler, args...; kw...)
-end
-
-"""
-Sample a random configuration from the variables' priors
-"""
-function sample_from_variable_biases(rng::AbstractRNG, model::MarkovRandomField)
-    return map(eachvariable(model)) do i
-        bias = model.variable_biases[i]
-        states = domain(model, i)
-        w = [weight(bias, x) for x in states] 
-        StatsBase.sample(rng, states, StatsBase.weights(w))
-    end
 end

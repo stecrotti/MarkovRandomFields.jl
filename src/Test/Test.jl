@@ -30,8 +30,8 @@ Return a `MarkovRandomField` with random factors.
 `nstates` is an iterable containing the number of values that can be taken by each variable.
 """
 function rand_mrf(rng::AbstractRNG, g::AbstractFactorGraph, nstates)
-    factors = [rand_factor(rng, [nstates[i] for i in neighbors(g,f_vertex(a))]) for a in f_vertices(g)] 
-    variable_biases = [rand_factor(rng, [nstates[i]]) for i in v_vertices(g)]
+    factors = [rand_factor(rng, [nstates[i] for i in neighbors(g,f_vertex(a))]) for a in eachfactor(g)] 
+    variable_biases = [rand_factor(rng, [nstates[i]]) for i in eachvariable(g)]
     return MarkovRandomField(g, factors, nstates; variable_biases)  
 end
 rand_mrf(g::AbstractFactorGraph, nstates) = rand_mrf(default_rng(), g, nstates)

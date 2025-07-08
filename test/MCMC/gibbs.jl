@@ -1,19 +1,19 @@
-function sample_mh(model::MarkovRandomField; nsamples=10^4)
+function sample_gibbs(model::MarkovRandomField; nsamples=10^4)
     model_ = MRFModel(model)
-    sampler = MHSampler()
+    sampler = GibbsSampler()
     return sample(model_, sampler, nsamples)
 end
 
-function sample_mh_parallel(model::MarkovRandomField; nsamples=10^4)
+function sample_gibbs_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), MHSampler(), MCMCThreads(), 
+    samples_bundle = sample(MRFModel(model), GibbsSampler(), MCMCThreads(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
 
-function sample_mh_distributed(model::MarkovRandomField; nsamples=10^4)
+function sample_gibbs_distributed(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), MHSampler(), MCMCDistributed(), 
+    samples_bundle = sample(MRFModel(model), GibbsSampler(), MCMCDistributed(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
@@ -22,7 +22,7 @@ end
     A = [1 1 1]
     nstates = fill(3, 3)
     model = MarkovRandomField(A, fill(UniformFactor(), 1), nstates)
-    samples = sample_mh(model; nsamples=10^4)
+    samples = sample_gibbs(model; nsamples=10^4)
     m = mean(samples[end÷2:end])
     @test all(x -> abs(x - 2) < 1e-1, m)
 end
@@ -34,7 +34,7 @@ end
     variable_biases = [TabulatedFactor([1-b, b]) for b in biases]
     model = MarkovRandomField(A, fill(UniformFactor(), 1), nstates;
         variable_biases)
-    samples = sample_mh(model; nsamples=10^4)
+    samples = sample_gibbs(model; nsamples=10^4)
     m = mean(samples[end÷2:end])
     @test all(abs.(m .- 1 .- biases) .< 1e-1)
 end
@@ -45,11 +45,11 @@ end
     biases = [0.2, 0.3, 0.8]
     variable_biases = [TabulatedFactor([1-b, b]) for b in biases]
     model = MarkovRandomField(A, TabulatedFactor[], nstates; variable_biases)
-    samples = sample_mh(model; nsamples=10^4)
+    samples = sample_gibbs(model; nsamples=10^4)
     m = mean(samples[end÷2:end])
     marg = exact_marginals(model)
     m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-    @test all(abs(mi - mi_ex) < 1e-1 for (mi, mi_ex) in zip(m, m_ex))
+    @test all(abs.(m .- m_ex) .< 1e-1)
 end
 
 @testset "Parallel and distributed" begin
@@ -61,19 +61,19 @@ end
     model = rand_mrf(A, nstates)
 
     @testset "Parallel" begin
-        samples = sample_mh_parallel(model; nsamples=10^4)
+        samples = sample_gibbs_parallel(model; nsamples=10^4)
         m = mean(samples[end÷2:end])
         marg = exact_marginals(model)
         m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-        @test all(abs(mi - mi_ex) < 1e-1 for (mi, mi_ex) in zip(m, m_ex))
+        @test all(abs.(m .- m_ex) .< 1e-1)
     end
 
     @testset "Distributed" begin
-        samples = sample_mh_distributed(model; nsamples=10^4)
-        m = mean(samples[end÷2:end])
+        samples = sample_gibbs_distributed(model; nsamples=10^4)
+        m = mean(samples[end÷4:end])
         marg = exact_marginals(model)
         m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-        @test all(abs(mi - mi_ex) < 1e-1 for (mi, mi_ex) in zip(m, m_ex))
+        @test all(abs.(m .- m_ex) .< 1e-1)
     end    
 
 end

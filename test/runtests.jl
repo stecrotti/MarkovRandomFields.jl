@@ -22,6 +22,9 @@ end
     @testset "Metropolis" begin
         include("MCMC/metropolis.jl")
     end
+    @testset "Gibbs" begin
+        include("MCMC/gibbs.jl")
+    end
 end
 
 @testset "Models" begin
