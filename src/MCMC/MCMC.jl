@@ -56,4 +56,6 @@ export sample
 export MHSampler
 export GibbsSampler
 
+export MCMCThreads, MCMCSerial, MCMCDistributed
+
 end # end module

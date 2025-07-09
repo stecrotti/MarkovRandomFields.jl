@@ -9,6 +9,9 @@
     variable_biases = [IsingField(hi) for hi in h]
     nstates = fill(2, N)
     model = MarkovRandomField(graph, factors, variable_biases, nstates)
+    
+    model = MarkovRandomField(Ising(J/N * A, h))
+    
     ising = UniformIsing(N, J, h)
 
     x = rand(1:2, N)

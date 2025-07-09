@@ -45,3 +45,33 @@ struct IsingField{T<:Real}  <: Factor
 end
 
 MarkovRandomFields.weight(f::IsingField, x)  = exp(f.βh * potts2spin(only(x)))
+
+# Ising model with xᵢ ∈ {1,2} mapped onto spins {+1,-1}
+struct Ising{TJ<:Real, Th<:Real, Tβ<:Real, Tg<:Integer}
+    g :: IndexedGraph{Tg}
+    J :: Vector{TJ}
+    h :: Vector{Th}
+    β :: Tβ
+
+    function Ising(g::IndexedGraph{Tg}, J::Vector{TJ}, h::Vector{Th}, β::Tβ=1) where 
+            {TJ<:Real, Th<:Real, Tβ<:Real, Tg<:Integer}
+        @assert length(J) == ne(g)
+        @assert length(h) == nv(g)
+        @assert β ≥ 0
+        new{TJ, Th, Tβ, Tg}(g, J, h, β)
+    end
+end
+
+function Ising(J::AbstractMatrix{<:Real}, h::Vector{<:Real}, β::Real=1.0)
+    Jvec = [J[i,j] for j in axes(J,2) for i in axes(J,1) if i < j && J[i,j]!=0]
+    g = IndexedGraph(Symmetric(J, :L))
+    Ising(g, Jvec, h, β)
+end
+
+function MarkovRandomFields.MarkovRandomField(ising::Ising)
+    g = pairwise_interaction_graph(ising.g)
+    factors = [IsingCoupling(ising.β * Jᵢⱼ) for Jᵢⱼ in ising.J]
+    variable_biases = [IsingField(ising.β * hᵢ) for hᵢ in ising.h]
+    nstates = fill(2, nvariables(g))
+    return MarkovRandomField(g, factors, variable_biases, nstates)
+end
