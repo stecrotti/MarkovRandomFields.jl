@@ -1,19 +1,19 @@
 function sample_gibbs(model::MarkovRandomField; nsamples=10^4)
     model_ = MRFModel(model)
-    sampler = GibbsSampler()
+    sampler = GibbsSampler(model)
     return sample(model_, sampler, nsamples)
 end
 
 function sample_gibbs_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), GibbsSampler(), MCMCThreads(), 
+    samples_bundle = sample(MRFModel(model), GibbsSampler(model), MCMCThreads(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
 
 function sample_gibbs_distributed(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), GibbsSampler(), MCMCDistributed(), 
+    samples_bundle = sample(MRFModel(model), GibbsSampler(model), MCMCDistributed(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
@@ -24,7 +24,7 @@ end
     model = MarkovRandomField(A, fill(UniformFactor(), 1), nstates)
     samples = sample_gibbs(model; nsamples=10^4)
     m = mean(samples[end÷2:end])
-    @test all(x -> abs(x - 2) < 1e-1, m)
+    @test all(abs.(m .-2 ) .< 1e-1)
 end
 
 @testset "Only variable biases" begin
@@ -70,7 +70,7 @@ end
 
     @testset "Distributed" begin
         samples = sample_gibbs_distributed(model; nsamples=10^4)
-        m = mean(samples[end÷4:end])
+        m = mean(samples[end÷2:end])
         marg = exact_marginals(model)
         m_ex = [sum(eachindex(margi).*margi) for margi in marg]
         @test all(abs.(m .- m_ex) .< 1e-1)

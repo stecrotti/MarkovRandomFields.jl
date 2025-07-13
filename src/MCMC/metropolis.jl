@@ -1,9 +1,15 @@
 """
 A Metropolis Hastings sampler
 """
-struct MHSampler <: MRFSampler end 
+struct MHSampler{T<:AbstractVector{<:Integer}} <: MRFSampler 
+    order :: T
+end 
+function MHSampler(model::MarkovRandomField)
+    order = collect(eachvariable(model))
+    return MHSampler(order)
+end
 
-function sample_new_value(rng::AbstractRNG, sampler::MHSampler, model::MarkovRandomField, state::AbstractVector{<:Integer}, i::Integer)
+function sample_new_value(rng::AbstractRNG, model::MarkovRandomField, state::AbstractVector{<:Integer}, i::Integer)
     xi = state[i]
     nstates_i = nstates(model, i)
     if nstates_i == 1
@@ -22,24 +28,28 @@ function AbstractMCMC.step(
         sampler::MHSampler, 
         state::AbstractVector{<:Integer}; kw...)
 
-    i = rand(rng, eachindex(state))
-    xi_current = state[i]
-    xi_new = sample_new_value(rng, sampler, model.mrf, state, i)
-    prob_current = prob_new = ULogarithmic(1)
-    for a in neighbors(model.mrf.graph, v_vertex(i))
-        ∂a = neighbors(model.mrf.graph, f_vertex(a))
-        fa = model.mrf.factors[a]
-        state[i] = xi_new
-        prob_new *= weight(fa, @view state[∂a])
-        state[i] = xi_current
-        prob_current *= weight(fa, @view state[∂a])
+    StatsBase.shuffle!(sampler.order)
+
+    for i in sampler.order
+        xi_current = state[i]
+        xi_new = sample_new_value(rng, model.mrf, state, i)
+        prob_current = prob_new = ULogarithmic(1)
+        for a in neighbors(model.mrf.graph, v_vertex(i))
+            ∂a = neighbors(model.mrf.graph, f_vertex(a))
+            fa = model.mrf.factors[a]
+            state[i] = xi_new
+            prob_new *= weight(fa, @view state[∂a])
+            state[i] = xi_current
+            prob_current *= weight(fa, @view state[∂a])
+        end
+        bias_i = model.mrf.variable_biases[i]
+        prob_new *= weight(bias_i, xi_new)
+        prob_current *= weight(bias_i, xi_current)
+        logprob_ratio = log(prob_new / prob_current)
+        r = min(exp(logprob_ratio), 1)
+        accept = rand(rng) < r
+        accept && (state[i] = xi_new)
     end
-    bias_i = model.mrf.variable_biases[i]
-    prob_new *= weight(bias_i, xi_new)
-    prob_current *= weight(bias_i, xi_current)
-    logprob_ratio = log(prob_new / prob_current)
-    r = min(exp(logprob_ratio), 1)
-    accept = rand(rng) < r
-    accept && (state[i] = xi_new)
+
     return copy(state), state
 end

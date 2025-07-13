@@ -1,19 +1,19 @@
 function sample_mh(model::MarkovRandomField; nsamples=10^4)
     model_ = MRFModel(model)
-    sampler = MHSampler()
+    sampler = MHSampler(model)
     return sample(model_, sampler, nsamples)
 end
 
 function sample_mh_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), MHSampler(), MCMCThreads(), 
+    samples_bundle = sample(MRFModel(model), MHSampler(model), MCMCThreads(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
 
 function sample_mh_distributed(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), MHSampler(), MCMCDistributed(), 
+    samples_bundle = sample(MRFModel(model), MHSampler(model), MCMCDistributed(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
@@ -24,7 +24,7 @@ end
     model = MarkovRandomField(A, fill(UniformFactor(), 1), nstates)
     samples = sample_mh(model; nsamples=10^4)
     m = mean(samples[end÷2:end])
-    @test all(x -> abs(x - 2) < 1e-1, m)
+    @test all(abs.(m .-2 ) .< 1e-1)
 end
 
 @testset "Only variable biases" begin
@@ -49,7 +49,7 @@ end
     m = mean(samples[end÷2:end])
     marg = exact_marginals(model)
     m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-    @test all(abs(mi - mi_ex) < 1e-1 for (mi, mi_ex) in zip(m, m_ex))
+    @test all(abs.(m .- m_ex) .< 1e-1)
 end
 
 @testset "Parallel and distributed" begin
@@ -65,7 +65,7 @@ end
         m = mean(samples[end÷2:end])
         marg = exact_marginals(model)
         m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-        @test all(abs(mi - mi_ex) < 1e-1 for (mi, mi_ex) in zip(m, m_ex))
+        @test all(abs.(m .- m_ex) .< 1e-1)
     end
 
     @testset "Distributed" begin
@@ -73,7 +73,7 @@ end
         m = mean(samples[end÷2:end])
         marg = exact_marginals(model)
         m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-        @test all(abs(mi - mi_ex) < 1e-1 for (mi, mi_ex) in zip(m, m_ex))
+        @test all(abs.(m .- m_ex) .< 1e-1)
     end    
 
 end

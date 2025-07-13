@@ -33,15 +33,10 @@ function AbstractMCMC.step(
         rng::AbstractRNG,
         model::MRFModel,
         sampler::MRFSampler;
-        initial_state = Nothing, 
+        initial_state = sample_from_variable_biases(rng, model.mrf), 
         kw...)
 
-        if initial_state == Nothing
-            next_state = sample_from_variable_biases(rng, model.mrf)
-            return copy(next_state), next_state
-        else
-            return copy(initial_state), initial_state
-        end
+        return copy(initial_state), initial_state
 end
 function AbstractMCMC.step(model::MRFModel, sampler::MRFSampler, args...; kw...)
     return AbstractMCMC.step(default_rng(), model, sampler, args...; kw...)
