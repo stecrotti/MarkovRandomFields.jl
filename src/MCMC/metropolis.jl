@@ -22,7 +22,6 @@ function AbstractMCMC.step(
         sampler::MHSampler, 
         state::AbstractVector{<:Integer}; kw...)
 
-    # state_new = copy(state)
     i = rand(rng, eachindex(state))
     xi_current = state[i]
     xi_new = sample_new_value(rng, sampler, model.mrf, state, i)
