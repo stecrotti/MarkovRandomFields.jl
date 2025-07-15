@@ -9,7 +9,7 @@ function GibbsSampler(model::MarkovRandomField)
     return MHSampler(order)
 end 
 
-function AbstractMCMC.step(
+function step(
         rng::AbstractRNG,
         model::MRFModel,
         sampler::GibbsSampler, 
@@ -34,5 +34,5 @@ function AbstractMCMC.step(
         end
         state[i] = sample_noalloc(rng, pcond)
     end
-    return copy(state), state
+    return state, state
 end

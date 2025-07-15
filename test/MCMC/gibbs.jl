@@ -6,14 +6,7 @@ end
 
 function sample_gibbs_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), GibbsSampler(model), MCMCThreads(), 
-        nsamples, nchains)
-    return reduce(vcat, samples_bundle)
-end
-
-function sample_gibbs_distributed(model::MarkovRandomField; nsamples=10^4)
-    nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), GibbsSampler(model), MCMCDistributed(), 
+    samples_bundle = sample(MRFModel(model), GibbsSampler(model), MultiThread(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
@@ -67,14 +60,5 @@ end
         m_ex = [sum(eachindex(margi).*margi) for margi in marg]
         @test all(abs.(m .- m_ex) .< 1e-1)
     end
-
-    @testset "Distributed" begin
-        samples = sample_gibbs_distributed(model; nsamples=10^4)
-        m = mean(samples[end÷2:end])
-        marg = exact_marginals(model)
-        m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-        @test all(abs.(m .- m_ex) .< 1e-1)
-    end    
-
 end
 

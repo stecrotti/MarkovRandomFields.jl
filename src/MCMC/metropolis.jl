@@ -21,8 +21,7 @@ function sample_new_value(rng::AbstractRNG, model::MarkovRandomField, state::Abs
     return xi_new
 end
 
-###### AbstractMCMC interface: it is enough to override the `step` method in two versions: without and with the `state` argument, to deal with generation of the first and the subsequent samples, respectively
-function AbstractMCMC.step(
+function step(
         rng::AbstractRNG,
         model::MRFModel,
         sampler::MHSampler, 
@@ -51,5 +50,5 @@ function AbstractMCMC.step(
         accept && (state[i] = xi_new)
     end
 
-    return copy(state), state
+    return state, state
 end

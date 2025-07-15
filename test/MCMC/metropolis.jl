@@ -6,14 +6,7 @@ end
 
 function sample_mh_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), MHSampler(model), MCMCThreads(), 
-        nsamples, nchains)
-    return reduce(vcat, samples_bundle)
-end
-
-function sample_mh_distributed(model::MarkovRandomField; nsamples=10^4)
-    nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), MHSampler(model), MCMCDistributed(), 
+    samples_bundle = sample(MRFModel(model), MHSampler(model), MultiThread(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end
@@ -52,7 +45,7 @@ end
     @test all(abs.(m .- m_ex) .< 1e-1)
 end
 
-@testset "Parallel and distributed" begin
+@testset "Parallel" begin
     A = [1 0 0 1;
          0 0 1 1;
          1 1 1 0
@@ -67,14 +60,5 @@ end
         m_ex = [sum(eachindex(margi).*margi) for margi in marg]
         @test all(abs.(m .- m_ex) .< 1e-1)
     end
-
-    @testset "Distributed" begin
-        samples = sample_mh_distributed(model; nsamples=10^4)
-        m = mean(samples[end÷2:end])
-        marg = exact_marginals(model)
-        m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-        @test all(abs.(m .- m_ex) .< 1e-1)
-    end    
-
 end
 

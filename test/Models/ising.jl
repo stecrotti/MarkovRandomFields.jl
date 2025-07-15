@@ -23,7 +23,7 @@
     # Run Metropolis-Hastings (in parallel!)
     nsamples = 10^5
     nchains = 8
-    samples_bundle = sample(MRFModel(model), MHSampler(model), MCMCThreads(),
+    samples_bundle = sample(MRFModel(model), MHSampler(model), MultiThread(),
         nsamples, nchains)
     samples = reduce(vcat, samples_bundle)
     energies_mcmc = [-logprob(model, x) for x in samples[end÷4:end]]
