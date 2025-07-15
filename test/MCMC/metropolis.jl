@@ -52,13 +52,10 @@ end
          0 1 0 1]
     nstates = fill(5, 4)
     model = rand_mrf(A, nstates)
-
-    @testset "Parallel" begin
-        samples = sample_mh_parallel(model; nsamples=10^4)
-        m = mean(samples[end÷2:end])
-        marg = exact_marginals(model)
-        m_ex = [sum(eachindex(margi).*margi) for margi in marg]
-        @test all(abs.(m .- m_ex) .< 1e-1)
-    end
+    samples = sample_mh_parallel(model; nsamples=10^4)
+    m = mean(samples[end÷2:end])
+    marg = exact_marginals(model)
+    m_ex = [sum(eachindex(margi).*margi) for margi in marg]
+    @test all(abs.(m .- m_ex) .< 1e-1)
 end
 
