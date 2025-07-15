@@ -64,7 +64,7 @@ function StatsBase.sample(
     model::MRFModel,
     sampler::MRFSampler,
     nsamples::Integer;
-    n_warmup = 0,
+    nwarmup = 0,
     initial_state = sample_from_variable_biases(rng, model.mrf),
     kw...,
 )
@@ -75,14 +75,14 @@ function StatsBase.sample(
         throw(ArgumentError("Initial state length must match number of variables, got $(length(initial_state)) and $(nvariables(model.mrf))"))
 
     state = copy(initial_state)
-    for it in 1:n_warmup
+    for it in 1:nwarmup
         sample, state = step(rng, model, sampler, state; kw...)
     end
 
     samples = [copy(state)]
-    sizehint!(samples, nsamples - n_warmup)
+    sizehint!(samples, nsamples - nwarmup)
 
-    for it in 1:nsamples-n_warmup-1
+    for it in 1:nsamples-nwarmup-1
         sample, state = step(rng, model, sampler, state; kw...)
         push!(samples, copy(sample))
     end
