@@ -34,5 +34,5 @@ function step(
         end
         state[i] = sample_noalloc(rng, pcond)
     end
-    return state, state
+    return state
 end

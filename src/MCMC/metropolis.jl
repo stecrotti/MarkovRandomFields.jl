@@ -49,5 +49,5 @@ function step(
         accept && (state[i] = xi_new)
     end
 
-    return state, state
+    return state
 end

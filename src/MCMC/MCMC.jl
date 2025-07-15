@@ -68,23 +68,21 @@ function StatsBase.sample(
     initial_state = sample_from_variable_biases(rng, model.mrf),
     kw...,
 )
-
-    # check sizes
     # check initial state
     length(initial_state) == nvariables(model.mrf) ||
         throw(ArgumentError("Initial state length must match number of variables, got $(length(initial_state)) and $(nvariables(model.mrf))"))
 
     state = copy(initial_state)
     for it in 1:nwarmup
-        sample, state = step(rng, model, sampler, state; kw...)
+        state = step(rng, model, sampler, state; kw...)
     end
 
     samples = [copy(state)]
     sizehint!(samples, nsamples - nwarmup)
 
     for it in 1:nsamples-nwarmup-1
-        sample, state = step(rng, model, sampler, state; kw...)
-        push!(samples, copy(sample))
+        state = step(rng, model, sampler, state; kw...)
+        push!(samples, copy(state))
     end
 
     return samples
