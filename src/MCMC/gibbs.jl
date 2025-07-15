@@ -24,13 +24,13 @@ function step(
         # conditional probability of xi given its neighbors
         pcond = Iterators.map(1:nstates_i) do xi
             state[i] = xi
-            p = ULogarithmic(weight(model.mrf.variable_biases[i], (xi,)))
+            logp = logweight(model.mrf.variable_biases[i], (xi,))
             for a in ∂i
                 ∂a = neighbors(model.mrf.graph, f_vertex(a))
                 fa = model.mrf.factors[a]
-                p *= weight(fa, @view state[∂a])
+                logp += logweight(fa, @inbounds @view state[∂a])
             end 
-            p
+            exp(p)
         end
         state[i] = sample_noalloc(rng, pcond)
     end

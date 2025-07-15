@@ -16,7 +16,7 @@
 
     x = rand(1:2, N)
     σ = MarkovRandomFields.Models.potts2spin.(x)
-    @test -logprob(model, x) ≈ energy(ising, σ)
+    @test -logweight(model, x) ≈ energy(ising, σ)
 
     avg_energy_exact = avg_energy(ising)
 
@@ -26,7 +26,7 @@
     samples_bundle = sample(MRFModel(model), MHSampler(model), MultiThread(),
         nsamples, nchains)
     samples = reduce(vcat, samples_bundle)
-    energies_mcmc = [-logprob(model, x) for x in samples[end÷4:end]]
+    energies_mcmc = [-logweight(model, x) for x in samples[end÷4:end]]
     avg_energy_mcmc = mean(energies_mcmc)
     @test abs(avg_energy_exact - avg_energy_mcmc) ≤ 1e-2
 end

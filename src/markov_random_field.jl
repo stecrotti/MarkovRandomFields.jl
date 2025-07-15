@@ -34,17 +34,22 @@ nstates(model::MarkovRandomField, i::Integer) = model.nstates[i]
 domain(model::MarkovRandomField, i::Integer) = 1:nstates(model, i)
 domains(model::MarkovRandomField) = (1:Xi for Xi in model.nstates)
 
-function weight(model::MarkovRandomField, x)
-    p = one(ULogarithmic)
+function logweight_factors(model::MarkovRandomField, x)
+    lw = 0
     for a in eachfactor(model.graph)
-        p *= weight(model.factors[a], x[neighbors(model.graph, f_vertex(a))])
+        lw += logweight(model.factors[a], x[neighbors(model.graph, f_vertex(a))])
     end
-    for i in eachvariable(model.graph)
-        p *= weight(model.variable_biases[i], x[i])
-    end
-    return p
+    return lw
 end
 
-# This returns the UNNORMALIZED probability!
-# Should we keep the name?
-logprob(model::MarkovRandomField, x) = log(weight(model, x))
+function logweight_variables(model::MarkovRandomField, x)
+    lw = 0
+    for i in eachvariable(model.graph)
+        lw += logweight(model.variable_biases[i], x[i])
+    end
+    return lw
+end
+
+function logweight(model::MarkovRandomField, x)
+    return logweight_factors(model, x) + logweight_variables(model, x)
+end

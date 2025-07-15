@@ -26,27 +26,26 @@ function step(
         model::MRFModel,
         sampler::MHSampler, 
         state::AbstractVector{<:Integer}; kw...)
-
+    
     StatsBase.shuffle!(sampler.order)
 
     for i in sampler.order
         xi_current = state[i]
         xi_new = sample_new_value(rng, model.mrf, state, i)
-        prob_current = prob_new = ULogarithmic(1)
+        bias_i = model.mrf.variable_biases[i]
+        logp_current = logweight(bias_i, xi_current)
+        logp_new = logweight(bias_i, xi_new)
         for a in neighbors(model.mrf.graph, v_vertex(i))
             ∂a = neighbors(model.mrf.graph, f_vertex(a))
             fa = model.mrf.factors[a]
             state[i] = xi_new
-            prob_new *= weight(fa, @view state[∂a])
+            logp_new += logweight(fa, @inbounds @view state[∂a])
             state[i] = xi_current
-            prob_current *= weight(fa, @view state[∂a])
+            logp_current += logweight(fa, @inbounds @view state[∂a])
         end
-        bias_i = model.mrf.variable_biases[i]
-        prob_new *= weight(bias_i, xi_new)
-        prob_current *= weight(bias_i, xi_current)
-        logprob_ratio = log(prob_new / prob_current)
-        r = min(exp(logprob_ratio), 1)
-        accept = rand(rng) < r
+        logp_ratio = logp_new - logp_current
+        r = - min(logp_ratio, 0)
+        accept = randexp(rng) > r 
         accept && (state[i] = xi_new)
     end
 

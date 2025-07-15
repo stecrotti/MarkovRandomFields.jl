@@ -15,7 +15,7 @@ struct KSATClause{T}  <: Factor where {T<:AbstractVector{<:Bool}}
     J :: T  # J = 1 if x appears negated, J = 0 otherwise (as in mezard montanari)
 end
 
-function MarkovRandomFields.weight(f::KSATClause, x) 
-    isempty(x) && return 1.0
-    return any(xᵢ - 1 != Jₐᵢ for (xᵢ, Jₐᵢ) in zip(x, f.J)) |> float
+function MarkovRandomFields.logweight(f::KSATClause{T}, x) where {T} 
+    isempty(x) && return zero(T)
+    return any(xᵢ - 1 != Jₐᵢ for (xᵢ, Jₐᵢ) in zip(x, f.J)) |> log
 end

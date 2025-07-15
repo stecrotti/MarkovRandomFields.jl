@@ -1,10 +1,11 @@
 module Test
 
-using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, weight, eachvariable, eachfactor, logprob
+using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, logweight, eachvariable, eachfactor
 using Random: AbstractRNG, default_rng
 using LogarithmicNumbers
 using InvertedIndices
 using IndexedFactorGraphs
+using LogExpFunctions: logsumexp
 
 export eachstate, nstatestot
 export exact_lognormalization, exact_prob, exact_marginals, exact_factor_marginals
@@ -18,7 +19,7 @@ Return a random `Factor` whose domain is specified by the iterable `nstates`.
 """
 function rand_factor(rng::AbstractRNG, nstates)
     isempty(nstates) && return Factor(zeros(0))
-    values = rand(rng, nstates...)
+    values = randn(rng, nstates...)
     return TabulatedFactor(values)
 end
 rand_factor(nstates) = rand_factor(default_rng(), nstates)
@@ -51,7 +52,7 @@ Exhaustively compute the natural logarithm of the normalization constant.
 """
 function exact_lognormalization(model::MarkovRandomField)
     nstatestot(model) > 10^10 && @warn "Exhaustive computations on a system of this size can take quite a while."
-    return log(sum(ULogarithmic(weight(model, x)) for x in eachstate(model)))
+    return logsumexp(logweight(model, x) for x in eachstate(model))
 end
 
 """
@@ -60,7 +61,7 @@ end
 Exhaustively compute the probability of each possible configuration of the variables.
 """
 function exact_prob(model::MarkovRandomField; logZ = exact_lognormalization(model))
-    p = [exp(logprob(model, x) - logZ) for x in eachstate(model)]
+    p = [exp(logweight(model, x) - logZ) for x in eachstate(model)]
     return p
 end
 

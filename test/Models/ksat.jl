@@ -10,7 +10,7 @@
 
     # test that probability of an unsat configuration is zero
     @test all(zip(eachstate(model), p_ex)) do (x, p)
-        nunsat = sum(1 - Int(weight(model.factors[a], x[i] 
+        nunsat = sum(1 - exp(logweight(model.factors[a], x[i] 
             for i in neighbors(model.graph, f_vertex(a)))) 
             for a in eachfactor(model.graph))
         (nunsat == 0) ⊻ (p == 0)

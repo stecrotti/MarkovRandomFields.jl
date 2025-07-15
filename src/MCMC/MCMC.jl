@@ -1,7 +1,7 @@
 module MCMC
 
-using MarkovRandomFields: MarkovRandomField, nstates, logprob, weight, domain, eachvariable
-using Random: AbstractRNG, default_rng, seed!
+using MarkovRandomFields: MarkovRandomField, nstates, logweight, domain, eachvariable, nvariables
+using Random: AbstractRNG, default_rng, seed!, randexp
 import StatsBase, StatsBase.sample
 using LogarithmicNumbers: ULogarithmic
 using IndexedFactorGraphs: v_vertex, f_vertex, neighbors
@@ -39,8 +39,8 @@ function sample_from_variable_biases(rng::AbstractRNG, model::MarkovRandomField)
     return map(eachvariable(model)) do i
         bias = model.variable_biases[i]
         states = domain(model, i)
-        w = [weight(bias, x) for x in states] 
-        StatsBase.sample(rng, states, StatsBase.weights(w))
+        w = [logweight(bias, x) for x in states] 
+        StatsBase.sample(rng, states, StatsBase.weights(exp.(w)))
     end
 end
 
@@ -71,6 +71,8 @@ function StatsBase.sample(
 
     # check sizes
     # check initial state
+    length(initial_state) == nvariables(model.mrf) ||
+        throw(ArgumentError("Initial state length must match number of variables, got $(length(initial_state)) and $(nvariables(model.mrf))"))
 
     state = copy(initial_state)
     for it in 1:n_warmup

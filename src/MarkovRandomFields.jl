@@ -1,3 +1,5 @@
+# __precompile__(false)
+
 module MarkovRandomFields
 
 using IndexedFactorGraphs: AbstractFactorGraph, FactorGraph, v_vertex, f_vertex, eachvariable, eachfactor, nvariables, nfactors, neighbors
@@ -18,7 +20,7 @@ export Factor, TabulatedFactor, UniformFactor
 
 export MarkovRandomField
 export eachvariable, eachfactor, nvariables, nfactors, domain, domains
-export weight, logprob
+export logweight
 
     
 end # end module

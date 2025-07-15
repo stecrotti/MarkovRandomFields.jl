@@ -24,7 +24,7 @@ end
     A = [1 1 1 1 1]
     nstates = fill(2, 5)
     biases = [0, 0.5, 1, 0.9, 0.1]
-    variable_biases = [TabulatedFactor([1-b, b]) for b in biases]
+    variable_biases = [TabulatedFactor(log.([1-b, b])) for b in biases]
     model = MarkovRandomField(A, fill(UniformFactor(), 1), nstates;
         variable_biases)
     samples = sample_gibbs(model; nsamples=10^4)
@@ -36,7 +36,7 @@ end
     A = zeros(Int, 0, 3)
     nstates = fill(2, 3)
     biases = [0.2, 0.3, 0.8]
-    variable_biases = [TabulatedFactor([1-b, b]) for b in biases]
+    variable_biases = [TabulatedFactor(log.([1-b, b])) for b in biases]
     model = MarkovRandomField(A, TabulatedFactor[], nstates; variable_biases)
     samples = sample_gibbs(model; nsamples=10^4)
     m = mean(samples[end÷2:end])

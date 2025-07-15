@@ -19,11 +19,11 @@ struct IsingCoupling{T<:Real}  <: Factor
     βJ :: T 
 end
 
-function MarkovRandomFields.weight(f::IsingCoupling, x) 
+function MarkovRandomFields.logweight(f::IsingCoupling{T}, x) where {T} 
     if isempty(x)
-        return 1
+        return zero(T)
     else
-        return exp(f.βJ * prod(potts2spin(xᵢ) for xᵢ in x))
+        return f.βJ * prod(potts2spin(xᵢ) for xᵢ in x)
     end
 end
 
@@ -44,7 +44,7 @@ struct IsingField{T<:Real}  <: Factor
     βh :: T 
 end
 
-MarkovRandomFields.weight(f::IsingField, x)  = exp(f.βh * potts2spin(only(x)))
+MarkovRandomFields.logweight(f::IsingField, x)  = f.βh * potts2spin(only(x))
 
 # Ising model with xᵢ ∈ {1,2} mapped onto spins {+1,-1}
 struct Ising{TJ<:Real, Th<:Real, Tβ<:Real, Tg<:Integer}
