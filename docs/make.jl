@@ -20,4 +20,5 @@ makedocs(;
 deploydocs(;
     repo="github.com/stecrotti/MarkovRandomFields.jl",
     devbranch="main",
+    push_preview=true,
 )

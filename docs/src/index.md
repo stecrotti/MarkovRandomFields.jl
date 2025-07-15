@@ -10,5 +10,5 @@ Documentation for [MarkovRandomFields](https://github.com/stecrotti/MarkovRandom
 ```
 
 ```@autodocs
-Modules = [MarkovRandomFields]
+Modules = [MarkovRandomFields, MarkovRandomFields.Models, MarkovRandomFields.MCMC, MarkovRandomFields.Test]
 ```
