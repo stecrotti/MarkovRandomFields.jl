@@ -117,7 +117,7 @@ function StatsBase.sample(
     if nchains <= Threads.nthreads()
         return _sample_nochunks(rng, model, sampler, nsamples, nchains;
             initial_state, kw...)
-    # if there are more chains than threads, group chains and send each group to one thread
+    # if there are more chains than threads, group chains and send each group to one thread, as in AbstractMCMC.jl
     else
         return _sample_chunks(rng, model, sampler, nsamples, nchains;
             initial_state, kw...)
