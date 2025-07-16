@@ -1,12 +1,10 @@
 function sample_mh(model::MarkovRandomField; nsamples=10^4)
-    model_ = MRFModel(model)
-    sampler = MHSampler(model)
-    return sample(model_, sampler, nsamples)
+    return sample(model, MHSampler(model), nsamples)
 end
 
 function sample_mh_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), MHSampler(model), MultiThread(), 
+    samples_bundle = sample(model, MHSampler(model), MultiThread(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end

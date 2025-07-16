@@ -11,23 +11,23 @@ end
 
 function step(
         rng::AbstractRNG,
-        model::MRFModel,
+        model::MarkovRandomField,
         sampler::GibbsSampler, 
         state::AbstractVector{<:Integer}; kw...)
 
     StatsBase.shuffle!(sampler.order)
 
     for i in sampler.order
-        ∂i = neighbors(model.mrf.graph, v_vertex(i))
-        nstates_i = nstates(model.mrf, i)
+        ∂i = neighbors(model.graph, v_vertex(i))
+        nstates_i = nstates(model, i)
 
         # conditional probability of xi given its neighbors
         pcond = Iterators.map(1:nstates_i) do xi
             state[i] = xi
-            logp = logweight(model.mrf.variable_biases[i], (xi,))
+            logp = logweight(model.variable_biases[i], (xi,))
             for a in ∂i
-                ∂a = neighbors(model.mrf.graph, f_vertex(a))
-                fa = model.mrf.factors[a]
+                ∂a = neighbors(model.graph, f_vertex(a))
+                fa = model.factors[a]
                 logp += logweight(fa, @inbounds @view state[∂a])
             end 
             exp(p)

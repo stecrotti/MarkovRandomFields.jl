@@ -23,7 +23,7 @@ end
 
 function step(
         rng::AbstractRNG,
-        model::MRFModel,
+        model::MarkovRandomField,
         sampler::MHSampler, 
         state::AbstractVector{<:Integer}; kw...)
     
@@ -31,13 +31,13 @@ function step(
 
     for i in sampler.order
         xi_current = state[i]
-        xi_new = sample_new_value(rng, model.mrf, state, i)
-        bias_i = model.mrf.variable_biases[i]
+        xi_new = sample_new_value(rng, model, state, i)
+        bias_i = model.variable_biases[i]
         logp_current = logweight(bias_i, xi_current)
         logp_new = logweight(bias_i, xi_new)
-        for a in neighbors(model.mrf.graph, v_vertex(i))
-            ∂a = neighbors(model.mrf.graph, f_vertex(a))
-            fa = model.mrf.factors[a]
+        for a in neighbors(model.graph, v_vertex(i))
+            ∂a = neighbors(model.graph, f_vertex(a))
+            fa = model.factors[a]
             state[i] = xi_new
             logp_new += logweight(fa, @inbounds @view state[∂a])
             state[i] = xi_current

@@ -1,12 +1,10 @@
 function sample_gibbs(model::MarkovRandomField; nsamples=10^4)
-    model_ = MRFModel(model)
-    sampler = GibbsSampler(model)
-    return sample(model_, sampler, nsamples)
+    return sample(model, GibbsSampler(model), nsamples)
 end
 
 function sample_gibbs_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(MRFModel(model), GibbsSampler(model), MultiThread(), 
+    samples_bundle = sample(model, GibbsSampler(model), MultiThread(), 
         nsamples, nchains)
     return reduce(vcat, samples_bundle)
 end

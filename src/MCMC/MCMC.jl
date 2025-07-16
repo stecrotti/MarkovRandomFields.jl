@@ -6,13 +6,6 @@ import StatsBase, StatsBase.sample
 using LogarithmicNumbers: ULogarithmic
 using IndexedFactorGraphs: v_vertex, f_vertex, neighbors
 
-""" 
-A subtype of AbstractMCMC.AbstractModel to work with discrete variables from Markov Random Fields
-"""
-struct MRFModel{T<:MarkovRandomField}
-    mrf :: T
-end
-
 abstract type MRFSampler end
 
 
@@ -50,7 +43,7 @@ struct MultiThread <: Parallelism end
 
 # Sample one chain
 function StatsBase.sample(
-    model::MRFModel,
+    model::MarkovRandomField,
     sampler::MRFSampler,
     nsamples::Integer; 
     kw...
@@ -61,16 +54,16 @@ function StatsBase.sample(
 end
 function StatsBase.sample(
     rng::AbstractRNG,
-    model::MRFModel,
+    model::MarkovRandomField,
     sampler::MRFSampler,
     nsamples::Integer;
     nwarmup = 0,
-    initial_state = sample_from_variable_biases(rng, model.mrf),
+    initial_state = sample_from_variable_biases(rng, model),
     kw...,
 )
     # check initial state
-    length(initial_state) == nvariables(model.mrf) ||
-        throw(ArgumentError("Initial state length must match number of variables, got $(length(initial_state)) and $(nvariables(model.mrf))"))
+    length(initial_state) == nvariables(model) ||
+        throw(ArgumentError("Initial state length must match number of variables, got $(length(initial_state)) and $(nvariables(model))"))
 
     state = copy(initial_state)
     for it in 1:nwarmup
@@ -90,7 +83,7 @@ end
 
 # Sample in parallel
 function StatsBase.sample(
-    model::MRFModel,
+    model::MarkovRandomField,
     sampler::MRFSampler,
     parallel::Parallelism,
     nsamples::Integer,
@@ -105,12 +98,12 @@ end
 # Sample in parallel using multi-threading
 function StatsBase.sample(
     rng::AbstractRNG,
-    model::MRFModel,
+    model::MarkovRandomField,
     sampler::MRFSampler,
     parallel::MultiThread,
     nsamples::Integer,
     nchains::Integer;
-    initial_state = [sample_from_variable_biases(rng, model.mrf) for _ in 1:nchains],
+    initial_state = [sample_from_variable_biases(rng, model) for _ in 1:nchains],
     kw...,
 )
     # if there are less chains than threads, send each chain to one thread
@@ -127,11 +120,11 @@ end
 
 function _sample_nochunks(
         rng::AbstractRNG,
-    model::MRFModel,
+    model::MarkovRandomField,
     sampler::MRFSampler,
     nsamples::Integer,
     nchains::Integer;
-    initial_state = [sample_from_variable_biases(rng, model.mrf) for _ in 1:nchains],
+    initial_state = [sample_from_variable_biases(rng, model) for _ in 1:nchains],
     kw...,
 )
     threads = 1:nchains
@@ -157,13 +150,14 @@ function _sample_nochunks(
     return chains
 end
 
+# copied from AbstractMCMC.jl
 function _sample_chunks(
     rng::AbstractRNG,
-    model::MRFModel,
+    model::MarkovRandomField,
     sampler::MRFSampler,
     nsamples::Integer,
     nchains::Integer;
-    initial_state = [sample_from_variable_biases(rng, model.mrf) for _ in 1:nchains],
+    initial_state = [sample_from_variable_biases(rng, model) for _ in 1:nchains],
     kw...,
 )
     # Copy the random number generator, model, and sample for each thread
@@ -220,13 +214,11 @@ end
 include("metropolis.jl")
 include("gibbs.jl")
 
-export MRFModel
 export sample
 
 export MHSampler
 export GibbsSampler
 
-# export MCMCThreads, MCMCSerial, MCMCDistributed
 export Serial, MultiThread
 
 end # end module
