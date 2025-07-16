@@ -67,3 +67,7 @@ function IsingMRF(g::IndexedGraph, J::AbstractVector{<:Real},
     nstates = fill(2, nvariables(fg))
     return MarkovRandomField(fg, factors, variable_biases, nstates)
 end
+
+## OBSERVABLES
+magnetization(::IsingMRF, x, args...; kwargs...) = mean(potts2spin, x)
+energy(model::IsingMRF, x, args...; kwargs...) = - logprob(model, x)

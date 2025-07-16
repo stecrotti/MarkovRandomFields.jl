@@ -4,7 +4,7 @@ using Test
 using Aqua
 using Statistics
 using AbstractMCMC
-using UniformIsingModels: UniformIsing, energy, avg_energy
+import UniformIsingModels
 using LinearAlgebra
 using IndexedFactorGraphs
 using Random

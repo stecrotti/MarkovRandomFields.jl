@@ -1,12 +1,13 @@
 function sample_mh(model::MarkovRandomField; nsamples=10^4)
-    return sample(model, MHSampler(model), nsamples)
+    obs = sample(model, MHSampler(model), nsamples)
+    return obs[:state]
 end
 
 function sample_mh_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(model, MHSampler(model), MultiThread(), 
+    obs = sample(model, MHSampler(model), MultiThread(), 
         nsamples, nchains)
-    return reduce(vcat, samples_bundle)
+    return reduce(vcat, obs[:state])
 end
 
 @testset "Uniform Factors" begin

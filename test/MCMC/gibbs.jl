@@ -1,12 +1,13 @@
 function sample_gibbs(model::MarkovRandomField; nsamples=10^4)
-    return sample(model, GibbsSampler(model), nsamples)
+    obs = sample(model, GibbsSampler(model), nsamples)
+    return obs[:state]
 end
 
 function sample_gibbs_parallel(model::MarkovRandomField; nsamples=10^4)
     nchains = Base.Threads.nthreads()
-    samples_bundle = sample(model, GibbsSampler(model), MultiThread(), 
+    obs = sample(model, GibbsSampler(model), MultiThread(), 
         nsamples, nchains)
-    return reduce(vcat, samples_bundle)
+    return reduce(vcat, obs[:state])
 end
 
 @testset "Uniform Factors" begin
