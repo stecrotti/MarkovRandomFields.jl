@@ -3,15 +3,9 @@
     J = 1.0
     h = zeros(N)
 
-    A = ones(Int, N, N) - I
-    graph = pairwise_interaction_graph(A)
-    factors = fill(IsingCoupling(J/N), nfactors(graph))
-    variable_biases = [IsingField(hi) for hi in h]
-    nstates = fill(2, N)
-    model = MarkovRandomField(graph, factors, variable_biases, nstates)
-    
-    model = MarkovRandomField(Ising(J/N * A, h))
-    
+    A = ones(Int, N, N) - I 
+    model = IsingMRF(J/N * A, h)
+
     ising = UniformIsing(N, J, h)
 
     x = rand(1:2, N)

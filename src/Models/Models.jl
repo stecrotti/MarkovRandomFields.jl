@@ -9,7 +9,7 @@ using IndexedFactorGraphs: pairwise_interaction_graph, nvariables
 include("ising.jl")
 include("ksat.jl")
 
-export Ising, IsingCoupling, IsingField
+export IsingCoupling, IsingField, IsingMRF
 export KSATClause
 
 end # end module

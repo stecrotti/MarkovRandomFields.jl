@@ -1,10 +1,12 @@
-struct MarkovRandomField{TG<:AbstractFactorGraph, TF<:AbstractVector{<:Factor}, TV<:AbstractVector{<:Factor}, TS<:AbstractVector{<:Integer}}
+struct MarkovRandomField{TF<:Factor, TV<:Factor, TS<:Integer, TG<:AbstractFactorGraph}
     graph :: TG
-    factors :: TF
-    variable_biases :: TV
-    nstates :: TS
+    factors :: Vector{TF}
+    variable_biases :: Vector{TV}
+    nstates :: Vector{TS}
 
-    function MarkovRandomField(graph::TG, factors::TF, variable_biases::TV, nstates::TS) where {TG<:AbstractFactorGraph, TV<:AbstractVector{<:Factor}, TF<:AbstractVector{<:Factor}, TS<:AbstractVector{<:Integer}}
+    function MarkovRandomField(graph::TG, factors::AbstractVector{TF}, variable_biases::AbstractVector{TV},
+        nstates::AbstractVector{TS}) where {TG<:AbstractFactorGraph, TV<:Factor, TF<:Factor, TS<:Integer}
+        
         nvar = nvariables(graph)
         nfact = nfactors(graph)
         length(factors) == nfact || throw(DimensionMismatch("Number of factor nodes in factor graph `graph`, $nfact, does not match length of `factors`, $(length(factors))"))
@@ -14,7 +16,7 @@ struct MarkovRandomField{TG<:AbstractFactorGraph, TF<:AbstractVector{<:Factor}, 
             nstates[i] > 0 || throw(ArgumentError("Number of states for each variable must be greater than zero. Got $(nstates[i]) for variable $i"))
         end
 
-        new{TG, TF, TV, TS}(graph, factors, variable_biases, nstates)
+        new{TF, TV, TS, TG}(graph, factors, variable_biases, nstates)
     end
 end
 function MarkovRandomField(graph, factors, nstates; variable_biases=fill(UniformFactor(), nvariables(graph)))
