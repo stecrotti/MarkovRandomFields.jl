@@ -3,7 +3,6 @@ using MarkovRandomFields.Test, MarkovRandomFields.MCMC, MarkovRandomFields.Model
 using Test
 using Aqua
 using Statistics
-using AbstractMCMC
 import UniformIsingModels
 using LinearAlgebra
 using IndexedFactorGraphs
