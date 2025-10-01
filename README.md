@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/stecrotti/MarkovRandomFields.jl/graph/badge.svg?token=DmaQdCVM4f)](https://codecov.io/gh/stecrotti/MarkovRandomFields.jl)
 [![Aqua](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 
-This package defines [Markov Random Fields](https://en.wikipedia.org/wiki/Markov_random_field) and provides some Monte Carlo Markov Chain (MCMC) utility.
+This package defines [Markov Random Fields](https://en.wikipedia.org/wiki/Markov_random_field) and provides some Monte Carlo Markov Chain (MCMC) utilities inspired by [AbstractMCMC.jl](https://github.com/TuringLang/AbstractMCMC.jl).
 
 ## Quickstart
 See the [examples](/examples) folder.
