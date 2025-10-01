@@ -1,6 +1,7 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 IndexedFactorGraphs = "edf0a622-c16b-410a-a162-e53dc16a76ae"
+IndexedGraphs = "8a731c18-cfb7-4915-927e-cc26b56b67cd"
 InvertedIndices = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LogarithmicNumbers = "aa2f6b4e-9042-5d33-9679-40d3a6b85899"

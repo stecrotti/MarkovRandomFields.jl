@@ -1,5 +1,3 @@
-# __precompile__(false)
-
 module MarkovRandomFields
 
 using IndexedFactorGraphs: AbstractFactorGraph, FactorGraph, v_vertex, f_vertex, eachvariable, eachfactor, nvariables, nfactors, neighbors

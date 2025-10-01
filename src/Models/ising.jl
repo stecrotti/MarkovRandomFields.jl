@@ -1,4 +1,3 @@
-
 potts2spin(x) = 3 - 2x
 
 @doc raw"""
