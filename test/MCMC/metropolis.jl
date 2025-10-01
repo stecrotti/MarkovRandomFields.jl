@@ -51,7 +51,7 @@ end
          0 1 0 1]
     nstates = fill(5, 4)
     model = rand_mrf(A, nstates)
-    samples = sample_mh_parallel(model; nsamples=10^4)
+    samples = sample_mh_parallel(model; nsamples=10^5)
     m = mean(samples[end÷2:end])
     marg = exact_marginals(model)
     m_ex = [sum(eachindex(margi).*margi) for margi in marg]
