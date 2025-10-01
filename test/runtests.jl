@@ -5,7 +5,7 @@ using Aqua
 using Statistics
 import UniformIsingModels
 using LinearAlgebra
-using IndexedFactorGraphs
+using IndexedFactorGraphs, IndexedGraphs
 using Random
 
 
@@ -34,7 +34,11 @@ end
     @testset "K-SAT" begin
         include("Models/ksat.jl")
     end
+    @testset "Potts" begin
+        include("Models/potts.jl")
+    end
 end
+
 
 
 nothing
