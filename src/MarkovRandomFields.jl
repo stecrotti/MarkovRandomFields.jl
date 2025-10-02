@@ -18,6 +18,7 @@ export Factor, TabulatedFactor, UniformFactor
 
 export MarkovRandomField
 export eachvariable, eachfactor, nvariables, nfactors, domain, domains
+export eachstate, nstatestot
 export logweight
 
     

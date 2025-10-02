@@ -55,3 +55,9 @@ end
 function logweight(model::MarkovRandomField, x)
     return logweight_factors(model, x) + logweight_variables(model, x)
 end
+
+function eachstate(model::MarkovRandomField)
+    return Iterators.product((1:nstates(model, i) for i in eachvariable(model))...)
+end
+
+nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in eachvariable(model); init=1)

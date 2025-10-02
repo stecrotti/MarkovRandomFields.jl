@@ -1,13 +1,13 @@
 module Test
 
-using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, logweight, eachvariable, eachfactor
+using MarkovRandomFields: TabulatedFactor, MarkovRandomField, nstates, 
+    logweight, eachvariable, eachfactor, eachstate, nstatestot
 using Random: AbstractRNG, default_rng
 using LogarithmicNumbers
 using InvertedIndices
 using IndexedFactorGraphs
 using LogExpFunctions: logsumexp
 
-export eachstate, nstatestot
 export exact_lognormalization, exact_prob, exact_marginals, exact_factor_marginals
 export rand_factor, rand_mrf
 
@@ -38,13 +38,6 @@ function rand_mrf(rng::AbstractRNG, g::AbstractFactorGraph, nstates)
 end
 rand_mrf(g::AbstractFactorGraph, nstates) = rand_mrf(default_rng(), g, nstates)
 rand_mrf(A::AbstractMatrix, args...; kw...) = rand_mrf(FactorGraph(A), args...; kw...)
-
-function eachstate(model::MarkovRandomField)
-    return Iterators.product((1:nstates(model, i) for i in eachvariable(model))...)
-end
-
-nstatestot(model::MarkovRandomField) = prod(nstates(model, i) for i in eachvariable(model); init=1)
-
 """
     exact_lognormalization(model::MarkovRandomField)
 
